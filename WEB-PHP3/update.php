@@ -22,6 +22,23 @@ $article = array(
   );
   //id값이 없으면 (홈화면) => 기본 메세지 출력
 
+$update_link = '';
+
+if(isset($_GET['id']))
+{
+  $filtered_id = mysqli_real_escape_string($conn, $_GET['id']); //보안 . sql주입문 공격 방
+  $sql = "SELECT * FROM topic WHERE id={$filtered_id}";
+  $result = mysqli_query($conn, $sql);
+  $row = mysqli_fetch_array($result);
+  $article['title'] = htmlspecialchars($row['title']);
+  $article['description'] = htmlspecialchars($row['description']);
+
+  $update_link = '<a href="update.php?id='.$_GET['id'].'">update</a>';
+}
+//id값이 있을때만 실행.
+//게시글 배열 article의 타이틀 = 해당 id값의 타이틀
+//게시글 배열 article의 내용 = 해당 id값의 내용
+
 
 ?>
 
@@ -38,12 +55,13 @@ $article = array(
     <ol>
       <?=$list?>
     </ol>
-    <form action="process_create.php" method="post">
+    <form action="process_update.php" method="post">
+      <input type="hidden" name="id" value="<?=$_GET['id']?>">
       <p>
-        <input type="text" name="title" placeholder="title">
+        <input type="text" name="title" placeholder="title" value="<?=$article['title'] ?>">
       </p>
       <p>
-        <textarea name="description" placeholder="description" rows="8" cols="80"></textarea>
+        <textarea name="description" placeholder="description" rows="8" cols="80"><?=$article['description']?></textarea>
       </p>
       <p>
         <input type="submit">
